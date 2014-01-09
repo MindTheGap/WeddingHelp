@@ -1,13 +1,13 @@
 //
-//  MainWindow.h
+//  MainWindow.m
 //  WeddingHelp
 //
 //  Created by MTG on 1/9/14.
 //  Copyright (c) 2014 MTG. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "MainWindowNewUser.h"
 
-@interface MainWindow : UIViewController
+@implementation MainWindowNewUser
 
 @end

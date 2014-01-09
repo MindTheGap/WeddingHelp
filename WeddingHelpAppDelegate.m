@@ -7,15 +7,25 @@
 //
 
 #import "WeddingHelpAppDelegate.h"
+#import "MainWindowNewUser.h"
 
 @implementation WeddingHelpAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"iPhone5Storyboard"
+                                                  bundle:nil];
+    UIViewController* vc = [sb instantiateViewControllerWithIdentifier:@"StartupNavigationController"];
+    [self.window setRootViewController:vc];
+    
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+//    self.window.rootViewController = navigationController;
+    
     return YES;
 }
 
