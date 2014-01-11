@@ -8,6 +8,9 @@
 
 #import "WeddingSearchResultTableViewController.h"
 #import "WeddingSearchResultsCell.h"
+#import "ServerMessagesMisc.h"
+#import <Foundation/NSJSONSerialization.h>
+#import "WeddingSearchResult.h"
 
 @interface WeddingSearchResultTableViewController ()
 
@@ -33,6 +36,40 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    self.delegate = (WeddingHelpAppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    [[self.delegate commManager] sendCommand:SearchResults completion:^(NSDictionary *json)
+     {
+         NSArray *results = [json objectForKey:@"Results"];
+         
+         self.results = [[NSMutableArray alloc] init];
+         for (int i = 0; i < [results count]; i++) {
+             NSDictionary *weddingDictionary = [results objectAtIndex:i];
+             
+             WeddingSearchResult *searchResult = [[WeddingSearchResult alloc] init];
+             
+             NSString *groomFullName = [weddingDictionary objectForKey:@"GroomFullName"];
+             if ([groomFullName class] != [NSNull class])
+                 [searchResult setGroomFullName:groomFullName];
+             
+             NSString *brideFullName = [weddingDictionary objectForKey:@"BrideFullName"];
+             if ([brideFullName class] != [NSNull class])
+                 [searchResult setBrideFullName:brideFullName];
+             
+             NSString *date = [weddingDictionary objectForKey:@"Date"];
+             if ([date class] != [NSNull class])
+                 [searchResult setDate:date];
+             
+             NSString *place = [weddingDictionary objectForKey:@"Place"];
+             if ([place class] != [NSNull class])
+                 [searchResult setPlace:place];
+             
+             [self.results addObject:searchResult];
+         }
+         
+         [self.tableView reloadData];
+     }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -52,18 +89,20 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 1;
+    return [self.results count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"WeddingSearchResultIdentifier";
     WeddingSearchResultsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+ 
+    WeddingSearchResult *weddingSearchResult = [self.results objectAtIndex:[indexPath row]];
     
-    [cell.groomName setText:@"Mc Zelikovsky"];
-    [cell.brideName setText:@"Lior blabla"];
-    [cell.place setText:@"Washington"];
-    [cell.weddingDate setText:@"2.1.2014"];
+    [cell.groomName setText:[weddingSearchResult groomFullName]];
+    [cell.brideName setText:[weddingSearchResult brideFullName]];
+    [cell.place setText:[weddingSearchResult place]];
+    [cell.weddingDate setText:[weddingSearchResult date]];
     
     return cell;
 }

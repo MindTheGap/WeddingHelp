@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "WeddingHelpAppDelegate.h"
 
 @interface WeddingSearchResultTableViewController : UITableViewController
+
+@property (strong, nonatomic) NSMutableArray *results;
+
+@property (strong, nonatomic) WeddingHelpAppDelegate *delegate;
 
 @end

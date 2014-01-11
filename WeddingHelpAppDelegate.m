@@ -15,6 +15,8 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
+    self.commManager = [[CommManager alloc] init];
+    
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"iPhone5Storyboard"
                                                   bundle:nil];
     UIViewController* vc = [sb instantiateViewControllerWithIdentifier:@"StartupNavigationController"];
@@ -23,8 +25,6 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
-    
-//    self.window.rootViewController = navigationController;
     
     return YES;
 }

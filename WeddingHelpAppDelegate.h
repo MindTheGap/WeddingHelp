@@ -7,9 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CommManager.h"
 
 @interface WeddingHelpAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+
+@property (strong, nonatomic) CommManager *commManager;
 
 @end
