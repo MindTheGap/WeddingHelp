@@ -8,6 +8,7 @@
 
 #import "WeddingHelpAppDelegate.h"
 #import "MainWindowNewUser.h"
+#import "MFSideMenu.h"
 
 @implementation WeddingHelpAppDelegate
 
@@ -20,7 +21,21 @@
     UIStoryboard*  sb = [UIStoryboard storyboardWithName:@"iPhone5Storyboard"
                                                   bundle:nil];
     UIViewController* vc = [sb instantiateViewControllerWithIdentifier:@"StartupNavigationController"];
-    [self.window setRootViewController:vc];
+//    [self.window setRootViewController:vc];
+    
+    UITableViewController *sideMenu = [sb instantiateViewControllerWithIdentifier:@"SideMenuTableViewController"];
+    
+    
+    self.container = [MFSideMenuContainerViewController
+                                                    containerWithCenterViewController:vc
+                                                    leftMenuViewController:sideMenu
+                                                    rightMenuViewController:nil];
+    self.container.panMode = MFSideMenuPanModeCenterViewController | MFSideMenuPanModeSideMenu;
+    [self.container setMenuSlideAnimationEnabled:YES];
+    [self.container setMenuSlideAnimationFactor:3.0f];
+    
+    self.window.rootViewController = self.container;
+    [self.window makeKeyAndVisible];
     
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];

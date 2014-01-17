@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 MTG. All rights reserved.
 //
 
-#import "WeddingSearchResult.h"
+#import "Wedding.h"
 
-@implementation WeddingSearchResult
+@implementation Wedding
 
 @end

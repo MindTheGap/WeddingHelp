@@ -1,31 +1,25 @@
 //
-//  WeddingSearchResultTableViewController.m
+//  ManagingWeddingTableViewController.m
 //  WeddingHelp
 //
-//  Created by MTG on 1/9/14.
+//  Created by MTG on 1/17/14.
 //  Copyright (c) 2014 MTG. All rights reserved.
 //
 
-#import "WeddingSearchResultTableViewController.h"
-#import "WeddingSearchResultsCell.h"
+#import "ManagingWeddingTableViewController.h"
 #import "ServerMessagesMisc.h"
-#import <Foundation/NSJSONSerialization.h>
+#import "ServerMessagesPH.h"
 #import "Wedding.h"
 #import "Toast+UIView.h"
+#import "ManagingWeddingTableViewCell.h"
 #import "UIImageView+AFNetworking.h"
-#import "WeddingSearchResultLoadMoreCell.h"
-#import "WeddingResultSelectionViewController.h"
 
-#define NORMAL_CELL_HEIGHT 106.0f
-#define LOAD_MORE_CELL_HEIGHT 48.0f
 
-@interface WeddingSearchResultTableViewController ()
-
-//@property (strong, nonatomic)
+@interface ManagingWeddingTableViewController ()
 
 @end
 
-@implementation WeddingSearchResultTableViewController
+@implementation ManagingWeddingTableViewController
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -48,45 +42,44 @@
     
     self.delegate = (WeddingHelpAppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    [self.view makeToastActivity];
-    
-    [[self.delegate commManager] sendCommand:SearchResults completion:^(NSDictionary *json)
+    [[self.delegate commManager] sendCommand:GetAllJoinedWeddings completion:^(NSDictionary *json)
      {
-         NSArray *results = [json objectForKey:@"Results"];
+         NSArray *weddings = [json objectForKey:@"Weddings"];
          
-         self.results = [[NSMutableArray alloc] init];
-         for (int i = 0; i < [results count]; i++) {
-             NSDictionary *weddingDictionary = [results objectAtIndex:i];
+         self.weddings = [[NSMutableArray alloc] init];
+         for (int i = 0; i < [weddings count]; i++) {
+             NSDictionary *weddingDictionary = [weddings objectAtIndex:i];
              
-             Wedding *searchResult = [[Wedding alloc] init];
+             Wedding *wedding = [[Wedding alloc] init];
              
              NSString *groomFullName = [weddingDictionary objectForKey:@"GroomFullName"];
              if ([groomFullName class] != [NSNull class])
-                 [searchResult setGroomFullName:groomFullName];
+                 [wedding setGroomFullName:groomFullName];
              
              NSString *brideFullName = [weddingDictionary objectForKey:@"BrideFullName"];
              if ([brideFullName class] != [NSNull class])
-                 [searchResult setBrideFullName:brideFullName];
+                 [wedding setBrideFullName:brideFullName];
              
              NSString *date = [weddingDictionary objectForKey:@"Date"];
              if ([date class] != [NSNull class])
-                 [searchResult setDate:date];
+                 [wedding setDate:date];
              
              NSString *place = [weddingDictionary objectForKey:@"Place"];
              if ([place class] != [NSNull class])
-                 [searchResult setPlace:place];
+                 [wedding setPlace:place];
              
              NSString *imagePath = [weddingDictionary objectForKey:@"Image"];
              if ([imagePath class] != [NSNull class])
-                 [searchResult setImagePath:imagePath];
+                 [wedding setImagePath:imagePath];
              
-             [self.results addObject:searchResult];
+             [self.weddings addObject:wedding];
          }
          
          NSLog(@"calling reloadData");
          dispatch_async(dispatch_get_main_queue(), ^{ [self.tableView reloadData]; });
          dispatch_async(dispatch_get_main_queue(), ^{ [self.view hideToastActivity]; });
      }];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -100,52 +93,32 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    NSLog(@"returning number of sections (1)");
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    NSLog(@"returning number of rows (%d)", [self.results count]);
-    int count = [self.results count];
-    return (count > 0) ? count + 1 : count;
-}
-
-- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath*)indexPath
-{
-    if ([indexPath row] == [self.results count])
-        return LOAD_MORE_CELL_HEIGHT;
-    
-    return NORMAL_CELL_HEIGHT;
+    return [self.weddings count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"returning cell for row %d", [indexPath row]);
     
-    static NSString *LoadMoreCellIdentifier = @"WeddingSearchResultLoadMoreIdentifier";
-    static NSString *CellIdentifier = @"WeddingSearchResultIdentifier";
+    static NSString *CellIdentifier = @"ManagingWeddingCellIdentifier";
     
-    if ([indexPath row] == [self.results count])
-    {
-        WeddingSearchResultLoadMoreCell *cell = [tableView dequeueReusableCellWithIdentifier:LoadMoreCellIdentifier forIndexPath:indexPath];
+    ManagingWeddingTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
         
-        return cell;
-    }
-    else
-    {
-        WeddingSearchResultsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    Wedding *wedding = [self.weddings objectAtIndex:[indexPath row]];
         
-        Wedding *weddingSearchResult = [self.results objectAtIndex:[indexPath row]];
+    [cell.groomNameLabel setText:[wedding groomFullName]];
+    [cell.brideNameLabel setText:[wedding brideFullName]];
+    [cell.placeLabel setText:[wedding place]];
+    [cell.dateLabel setText:[wedding date]];
         
-        [cell.groomName setText:[weddingSearchResult groomFullName]];
-        [cell.brideName setText:[weddingSearchResult brideFullName]];
-        [cell.place setText:[weddingSearchResult place]];
-        [cell.weddingDate setText:[weddingSearchResult date]];
-        
-        NSLog(@"image path is: %@", [weddingSearchResult imagePath]);
-        [cell.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[weddingSearchResult imagePath]]] placeholderImage:[UIImage imageNamed:@"anonymous"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+    NSLog(@"image path is: %@", [wedding imagePath]);
+    [cell.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[wedding imagePath]]] placeholderImage:[UIImage imageNamed:@"anonymous"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
             [UIView transitionWithView:cell.imageView
                               duration:0.3
                                options:UIViewAnimationOptionTransitionCrossDissolve
@@ -155,41 +128,16 @@
                                     NSLog(@"image is nil!");
                                 
                                 [cell.imageView setImage:image];
-                                [weddingSearchResult setImage:image];
+                                [wedding setImage:image];
                             }
                             completion:NULL];
             
-        }
-                                       failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+    }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
                                            NSLog(@"cellForRowAtIndexPath failed to fetch image! error: %@", error);
                                        }];
-
-        return cell;
-    }
-    
-    
-    return nil;
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    
-    UITabBarController *selectionTabBarController = segue.destinationViewController;
-    if ([selectionTabBarController class] == [UITabBarController class])
-    {
-        WeddingResultSelectionViewController *selectionViewController = [selectionTabBarController.viewControllers firstObject];
-        if (selectionViewController)
-        {
-            Wedding *weddingSearchResult = [self.results objectAtIndex:[indexPath row]];
-            
-            [selectionViewController setImage:[weddingSearchResult image]];
-            [selectionViewController setGroomFullName:[weddingSearchResult groomFullName]];
-            [selectionViewController setBrideFullName:[weddingSearchResult brideFullName]];
-            [selectionViewController setRehearsalDinnerDateText:[weddingSearchResult date]];
-            [selectionViewController setRehearsalDinnerPlaceText:[weddingSearchResult place]];            
-        }
-    }
+        
+    return cell;
 }
 
 /*

@@ -70,6 +70,12 @@
             NSString *jsonString = [serverMessageResults toJSONString];
             [self sendCommandString:jsonString completion:callback];
         }
+        case GetAllJoinedWeddings:
+        {
+            ServerMessageGetAllJoinedWeddings *serverMessageResults = [[ServerMessageGetAllJoinedWeddings alloc] init];
+            NSString *jsonString = [serverMessageResults toJSONString];
+            [self sendCommandString:jsonString completion:callback];
+        }
             
     }
 }

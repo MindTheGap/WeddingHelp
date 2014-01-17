@@ -13,6 +13,7 @@
 enum CommandType
 {
     SearchResults,
+    GetAllJoinedWeddings,
     Registration
 };
 

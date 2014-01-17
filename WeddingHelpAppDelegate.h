@@ -8,11 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "CommManager.h"
+#import "MFSideMenu.h"
 
 @interface WeddingHelpAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
 @property (strong, nonatomic) CommManager *commManager;
+
+@property (strong, nonatomic) MFSideMenuContainerViewController *container;
 
 @end

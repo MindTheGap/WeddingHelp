@@ -8,11 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@interface WeddingSearchResult : NSObject
+@interface Wedding : NSObject
 
 @property (strong, nonatomic) NSString *groomFullName;
 @property (strong, nonatomic) NSString *brideFullName;
 @property (strong, nonatomic) NSString *date;
 @property (strong, nonatomic) NSString *place;
+@property (strong, nonatomic) NSString *imagePath;
+@property (strong, nonatomic) UIImage  *image;
 
 @end

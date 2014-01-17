@@ -10,6 +10,7 @@
 
 #import "ServerMessageWeddingSearchResult.h"
 #import "ServerMessageRegistration.h"
+#import "ServerMessageGetAllJoinedWeddings.h"
 
 
 @interface ServerMessagesPH : NSObject
