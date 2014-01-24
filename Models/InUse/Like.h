@@ -7,7 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Comment.h"
+#import "Greeting.h"
 
 @interface Like : NSObject
+
+@property (weak, nonatomic) id object;
+@property (strong, nonatomic) id likeCreator;
 
 @end

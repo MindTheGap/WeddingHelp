@@ -14,7 +14,7 @@ typedef void(^CompletionBlock)(NSDictionary *);
 @interface CommManager : NSObject
 
 
-- (void)sendCommand:(enum CommandType)commandType completion:(CompletionBlock)callback;
+- (void)sendObject:(id)object completion:(CompletionBlock)callback;
 
 
 

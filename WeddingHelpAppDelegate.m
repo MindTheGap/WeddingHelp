@@ -41,6 +41,8 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
+    [self setEmail:@"cavnery@gmail.com"];
+    
     return YES;
 }
 

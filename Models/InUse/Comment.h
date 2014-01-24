@@ -10,4 +10,9 @@
 
 @interface Comment : NSObject
 
+@property (strong, nonatomic) NSString *text;
+@property (strong, nonatomic) NSMutableArray *likes;
+@property (strong, nonatomic) UIImage *image;
+@property (strong, nonatomic) id commentCreator;
+
 @end

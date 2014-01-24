@@ -14,7 +14,13 @@ enum CommandType
 {
     SearchResults,
     GetAllJoinedWeddings,
+    LikeGreeting,
     Registration
+};
+
+enum ResponseFromServer
+{
+    AOK
 };
 
 @end

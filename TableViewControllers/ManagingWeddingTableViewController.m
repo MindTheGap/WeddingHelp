@@ -7,8 +7,7 @@
 //
 
 #import "ManagingWeddingTableViewController.h"
-#import "ServerMessagesMisc.h"
-#import "ServerMessagesPH.h"
+#import "ServerMessageTypes.h"
 #import "Wedding.h"
 #import "Toast+UIView.h"
 #import "ManagingWeddingTableViewCell.h"
@@ -42,7 +41,8 @@
     
     self.delegate = (WeddingHelpAppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    [[self.delegate commManager] sendCommand:GetAllJoinedWeddings completion:^(NSDictionary *json)
+    NSDictionary *object = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d", GetAllJoinedWeddings], @"type", nil];
+    [[self.delegate commManager] sendObject:object completion:^(NSDictionary *json)
      {
          NSArray *weddings = [json objectForKey:@"Weddings"];
          
@@ -75,7 +75,7 @@
              [self.weddings addObject:wedding];
          }
          
-         NSLog(@"calling reloadData");
+//         NSLog(@"calling reloadData");
          dispatch_async(dispatch_get_main_queue(), ^{ [self.tableView reloadData]; });
          dispatch_async(dispatch_get_main_queue(), ^{ [self.view hideToastActivity]; });
      }];
@@ -104,7 +104,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"returning cell for row %d", [indexPath row]);
+//    NSLog(@"returning cell for row %d", [indexPath row]);
     
     static NSString *CellIdentifier = @"ManagingWeddingCellIdentifier";
     
@@ -117,15 +117,15 @@
     [cell.placeLabel setText:[wedding place]];
     [cell.dateLabel setText:[wedding date]];
         
-    NSLog(@"image path is: %@", [wedding imagePath]);
+//    NSLog(@"image path is: %@", [wedding imagePath]);
     [cell.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[wedding imagePath]]] placeholderImage:[UIImage imageNamed:@"anonymous"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
             [UIView transitionWithView:cell.imageView
                               duration:0.3
                                options:UIViewAnimationOptionTransitionCrossDissolve
                             animations:^{
-                                NSLog(@"cellForRowAtIndexPath setting image view to image");
-                                if (image == nil)
-                                    NSLog(@"image is nil!");
+//                                NSLog(@"cellForRowAtIndexPath setting image view to image");
+//                                if (image == nil)
+//                                    NSLog(@"image is nil!");
                                 
                                 [cell.imageView setImage:image];
                                 [wedding setImage:image];
@@ -134,7 +134,7 @@
             
     }
         failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                           NSLog(@"cellForRowAtIndexPath failed to fetch image! error: %@", error);
+//                                           NSLog(@"cellForRowAtIndexPath failed to fetch image! error: %@", error);
                                        }];
         
     return cell;

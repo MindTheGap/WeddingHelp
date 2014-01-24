@@ -8,7 +8,7 @@
 
 #import "WeddingSearchResultTableViewController.h"
 #import "WeddingSearchResultsCell.h"
-#import "ServerMessagesMisc.h"
+#import "ServerMessageTypes.h"
 #import <Foundation/NSJSONSerialization.h>
 #import "Wedding.h"
 #import "Toast+UIView.h"
@@ -50,7 +50,8 @@
     
     [self.view makeToastActivity];
     
-    [[self.delegate commManager] sendCommand:SearchResults completion:^(NSDictionary *json)
+    NSDictionary *object = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d", SearchResults], @"type", nil];
+    [[self.delegate commManager] sendObject:object completion:^(NSDictionary *json)
      {
          NSArray *results = [json objectForKey:@"Results"];
          
@@ -83,7 +84,7 @@
              [self.results addObject:searchResult];
          }
          
-         NSLog(@"calling reloadData");
+//         NSLog(@"calling reloadData");
          dispatch_async(dispatch_get_main_queue(), ^{ [self.tableView reloadData]; });
          dispatch_async(dispatch_get_main_queue(), ^{ [self.view hideToastActivity]; });
      }];
@@ -100,7 +101,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    NSLog(@"returning number of sections (1)");
+//    NSLog(@"returning number of sections (1)");
     return 1;
 }
 
@@ -137,6 +138,12 @@
     {
         WeddingSearchResultsCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
         
+        if ([indexPath row] >= [self.results count])
+        {
+            NSLog(@"row (%d) is higher than count (%d)!", [indexPath row], [self.results count]);
+            return cell;
+        }
+        
         Wedding *weddingSearchResult = [self.results objectAtIndex:[indexPath row]];
         
         [cell.groomName setText:[weddingSearchResult groomFullName]];
@@ -144,15 +151,15 @@
         [cell.place setText:[weddingSearchResult place]];
         [cell.weddingDate setText:[weddingSearchResult date]];
         
-        NSLog(@"image path is: %@", [weddingSearchResult imagePath]);
+//        NSLog(@"image path is: %@", [weddingSearchResult imagePath]);
         [cell.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[weddingSearchResult imagePath]]] placeholderImage:[UIImage imageNamed:@"anonymous"] success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
             [UIView transitionWithView:cell.imageView
                               duration:0.3
                                options:UIViewAnimationOptionTransitionCrossDissolve
                             animations:^{
-                                NSLog(@"cellForRowAtIndexPath setting image view to image");
-                                if (image == nil)
-                                    NSLog(@"image is nil!");
+//                                NSLog(@"cellForRowAtIndexPath setting image view to image");
+//                                if (image == nil)
+//                                    NSLog(@"image is nil!");
                                 
                                 [cell.imageView setImage:image];
                                 [weddingSearchResult setImage:image];
@@ -161,7 +168,7 @@
             
         }
                                        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-                                           NSLog(@"cellForRowAtIndexPath failed to fetch image! error: %@", error);
+//                                           NSLog(@"cellForRowAtIndexPath failed to fetch image! error: %@", error);
                                        }];
 
         return cell;

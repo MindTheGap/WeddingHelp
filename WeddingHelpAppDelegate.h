@@ -18,4 +18,6 @@
 
 @property (strong, nonatomic) MFSideMenuContainerViewController *container;
 
+@property (strong, nonatomic) NSString *email;
+
 @end

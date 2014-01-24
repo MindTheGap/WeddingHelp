@@ -7,17 +7,16 @@
 //
 
 #import "CommManager.h"
-#import "ServerMessagesMisc.h"
-#import "ServerMessagesPH.h"
+#import "ServerMessageTypes.h"
+#import <Foundation/NSJSONSerialization.h>
 
 #define SERVER_HOST @"http://192.168.94.1:4296/"
 
 
 @implementation CommManager
 
-- (void)sendCommandString:(NSString *)jsonString completion:(CompletionBlock)callback
+- (void)sendCommandString:(NSString *)jsonString jsonData:(NSData *)jsonData completion:(CompletionBlock)callback
 {
-    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:SERVER_HOST]];
     [request setValue:jsonString forHTTPHeaderField:@"json"];
     [request setHTTPMethod:@"POST"];
@@ -54,30 +53,21 @@
 
 
 
-- (void)sendCommand:(enum CommandType)commandType completion:(CompletionBlock)callback
+- (void)sendObject:(id)object completion:(CompletionBlock)callback
 {
-    switch (commandType)
-    {
-        case Registration:
-        {
-            ServerMessageRegistration *serverMessageRegistration = [[ServerMessageRegistration alloc] init];
-            NSString *jsonString = [serverMessageRegistration toJSONString];
-            [self sendCommandString:jsonString completion:callback];
-        }
-        case SearchResults:
-        {
-            ServerMessageWeddingSearchResult *serverMessageResults = [[ServerMessageWeddingSearchResult alloc] init];
-            NSString *jsonString = [serverMessageResults toJSONString];
-            [self sendCommandString:jsonString completion:callback];
-        }
-        case GetAllJoinedWeddings:
-        {
-            ServerMessageGetAllJoinedWeddings *serverMessageResults = [[ServerMessageGetAllJoinedWeddings alloc] init];
-            NSString *jsonString = [serverMessageResults toJSONString];
-            [self sendCommandString:jsonString completion:callback];
-        }
-            
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object
+                                                       options:0 // Pass 0 if you don't care about the readability of the generated string
+                                                         error:&error];
+    
+    if (! jsonData) {
+        NSLog(@"Trying to send command and got an error while trying to parse to json: %@", error);
+        
+        return;
     }
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [self sendCommandString:jsonString jsonData:jsonData completion:callback];
 }
 
 

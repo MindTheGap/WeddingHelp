@@ -7,12 +7,31 @@
 //
 
 #import "CommentsTableViewController.h"
+#import "Greeting.h"
+#import "UIImageView+AFNetworking.h"
+#import "Like.h"
+#import "Comment.h"
+#import "Toast+UIView.h"
+#import "WeddingHelpAppDelegate.h"
+#import "ServerMessageTypes.h"
+#import "CommentTableViewCell.h"
+
 
 @interface CommentsTableViewController ()
+
+@property (strong, nonatomic) NSMutableArray *comments;
+@property (strong, nonatomic) Greeting *lastSelectedComment;
+@property (weak, nonatomic) WeddingHelpAppDelegate *delegate;
+
 
 @end
 
 @implementation CommentsTableViewController
+
+- (IBAction)moreButtonPressed:(id)sender
+{
+
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -32,6 +51,8 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    self.delegate = (WeddingHelpAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
 - (void)didReceiveMemoryWarning
@@ -44,24 +65,42 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 0;
+    return [self.comments count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    // Configure the cell...
+    static NSString *CommentCellIdentifier = @"CommentCellIdentifier";
+    CommentTableViewCell *cell = (CommentTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CommentCellIdentifier forIndexPath:indexPath];
+    if (cell)
+    {
+        if ([indexPath row] >= [self.comments count])
+            return cell;
+        
+        Comment *comment = [self.comments objectAtIndex:[indexPath row]];
+        if (comment)
+        {
+            [cell setImageView:[[UIImageView alloc] initWithImage:[comment image]]];
+            [[cell mainLabel] setText:[comment text]];
+            NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:[comment text]];
+            CGRect textRect = [attrText boundingRectWithSize:CGSizeMake([[cell mainLabel] bounds].size.width, 10000) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
+            int numberOfRowsUsed = (int)ceil(textRect.size.height / [cell mainLabel].font.lineHeight);
+            
+            NSLog(@"calculated number of rows %d for row %d", numberOfRowsUsed, [indexPath row]);
+            
+            if (numberOfRowsUsed > 4)
+            {
+                [[cell moreButton] setHidden:NO];
+            }
+        }
+    }
     
     return cell;
 }
