@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CommentsTableView : UITableView
+@interface CommentsTableView : UITableView <UITableViewDelegate, UITableViewDataSource>
+
+@property (strong, nonatomic) NSMutableArray *rowHeights;
+
+@property (strong, nonatomic) NSMutableArray *comments;
+
+@property (assign, nonatomic) BOOL cascade;
+
+- (void) initData;
+- (void) initTableViewHeight;
+
 
 @end
