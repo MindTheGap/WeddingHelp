@@ -17,28 +17,27 @@
 #define kUserProfileImageHorizontalInsets 20.0f
 #define kUserProfileImageVerticalInsets 40.0f
 
-#define kBodylabelVerticalInsets 10.0f
-#define kBodylabelTrailingHorizontalInsets 10.0f
-#define kBodylabelLeadingHorizontalInsets 10.0f
+#define kBodylabelVerticalInsets 25.0f
+#define kBodylabelLeadingHorizontalInsets 30.0f
 #define kBodylabelWidth 200.0f
 
 #define kAddedImageWidth 230.0f
 #define kAddedImageHeight 230.0f
 #define kAddedImageHorizontalInsets 10.0f
-#define kAddedImageVerticalInsets 30.0f
+#define kAddedImageVerticalInsets 20.0f
 
 
 
 @interface GreetingTableViewProfileLabelImageCell : UITableViewCell
 
-@property (strong, nonatomic) UILabel *bodyLabel;
-@property (strong, nonatomic) UIImageView *userProfileImage;
-@property (strong, nonatomic) UIImageView *addedImage;
-@property (strong, nonatomic) UIImageView *likeImageView;
-@property (strong, nonatomic) UIImageView *commentImageView;
-@property (strong, nonatomic) UILabel *numOfLikesLabel;
-@property (strong, nonatomic) CommentsTableView *commentsTableView;
-@property (strong, nonatomic) UIButton *showAllCommentsButton;
+@property (strong, nonatomic) IBOutlet UILabel *bodyLabel;
+@property (strong, nonatomic) IBOutlet UIImageView *userProfileImage;
+@property (strong, nonatomic) IBOutlet UIImageView *addedImage;
+@property (strong, nonatomic) IBOutlet UIImageView *likeImageView;
+@property (strong, nonatomic) IBOutlet UIImageView *commentImageView;
+@property (strong, nonatomic) IBOutlet UILabel *numOfLikesLabel;
+@property (strong, nonatomic) IBOutlet CommentsTableView *commentsTableView;
+@property (strong, nonatomic) IBOutlet UIButton *showAllCommentsButton;
 
 @property (strong, nonatomic) UITableViewController *tableViewController;
 

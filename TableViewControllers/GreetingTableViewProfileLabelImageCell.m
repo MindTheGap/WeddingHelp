@@ -28,7 +28,7 @@
         // Initialization code
         
         self.contentView.backgroundColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.1];
-        self.accessoryType = UITableViewCellAccessoryNone;
+//        self.accessoryType = UITableViewCellAccessoryNone;
         
         self.userProfileImage = [[UIImageView alloc] initWithFrame:CGRectZero];
         [self.userProfileImage setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -45,26 +45,26 @@
         [self.bodyLabel setTextColor:[UIColor darkGrayColor]];
         [self.bodyLabel setBackgroundColor:[UIColor colorWithRed:1 green:0 blue:0 alpha:0.1]];
         
-        self.likeImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [self.likeImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [self.likeImageView setContentMode:UIViewContentModeCenter];
-
-        self.commentImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [self.commentImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-        [self.commentImageView setContentMode:UIViewContentModeCenter];
+//        self.likeImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+//        [self.likeImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+//        [self.likeImageView setContentMode:UIViewContentModeCenter];
+//
+//        self.commentImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+//        [self.commentImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+//        [self.commentImageView setContentMode:UIViewContentModeCenter];
         
-        self.numOfLikesLabel = [UILabel newAutoLayoutView];
-        [self.numOfLikesLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-        [self.numOfLikesLabel setNumberOfLines:1];
-        [self.numOfLikesLabel setTextAlignment:NSTextAlignmentLeft];
-        [self.numOfLikesLabel setTextColor:[UIColor darkGrayColor]];
+//        self.numOfLikesLabel = [UILabel newAutoLayoutView];
+//        [self.numOfLikesLabel setLineBreakMode:NSLineBreakByTruncatingTail];
+//        [self.numOfLikesLabel setNumberOfLines:1];
+//        [self.numOfLikesLabel setTextAlignment:NSTextAlignmentLeft];
+//        [self.numOfLikesLabel setTextColor:[UIColor darkGrayColor]];
         
         [self.contentView addSubview:self.userProfileImage];
         [self.contentView addSubview:self.addedImage];
         [self.contentView addSubview:self.bodyLabel];
-        [self.contentView addSubview:self.likeImageView];
-        [self.contentView addSubview:self.commentImageView];
-        [self.contentView addSubview:self.numOfLikesLabel];
+//        [self.contentView addSubview:self.likeImageView];
+//        [self.contentView addSubview:self.commentImageView];
+//        [self.contentView addSubview:self.numOfLikesLabel];
 
         [self updateFonts];
     }
@@ -74,7 +74,7 @@
 
 - (void)updateFonts
 {
-    self.numOfLikesLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+//    self.numOfLikesLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     self.bodyLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
 }
 
@@ -101,22 +101,22 @@
     // Note: if the constraints you add below require a larger cell size than the current size (which is likely to be the default size {320, 44}), you'll get an exception.
     // As a fix, you can temporarily increase the size of the cell's contentView so that this does not occur using code similar to the line below.
     //      See here for further discussion: https://github.com/Alex311/TableCellWithAutoLayout/commit/bde387b27e33605eeac3465475d2f2ff9775f163#commitcomment-4633188
-    // self.contentView.bounds = CGRectMake(0.0f, 0.0f, 99999.0f, 99999.0f);
+    self.contentView.bounds = CGRectMake(0.0f, 0.0f, 99999.0f, 99999.0f);
     
     [self.userProfileImage setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
     [self.userProfileImage autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kUserProfileImageVerticalInsets];
-    [self.userProfileImage autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:kUserProfileImageHorizontalInsets];
+    [self.userProfileImage autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:kUserProfileImageHorizontalInsets];
     [self.userProfileImage autoSetDimension:ALDimensionWidth toSize:kUserProfileImageWidth];
     [self.userProfileImage autoSetDimension:ALDimensionHeight toSize:kUserProfileImageHeight];
 
     [self.bodyLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
     [self.bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBodylabelVerticalInsets];
-    [self.bodyLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeRight ofView:self.userProfileImage withOffset:kBodylabelTrailingHorizontalInsets];
+    [self.bodyLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeRight ofView:self.userProfileImage withOffset:kBodylabelLeadingHorizontalInsets];
     [self.bodyLabel autoSetDimension:ALDimensionWidth toSize:kBodylabelWidth];
     
     [self.addedImage setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
     [self.addedImage autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bodyLabel withOffset:kAddedImageVerticalInsets];
-    [self.bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:kAddedImageHorizontalInsets];
+    [self.addedImage autoAlignAxisToSuperviewAxis:ALAxisVertical];
     [self.addedImage autoSetDimension:ALDimensionWidth toSize:kAddedImageWidth];
     [self.addedImage autoSetDimension:ALDimensionHeight toSize:kAddedImageHeight];
     

@@ -207,6 +207,11 @@ static NSString *GreetingsTableViewProfileLabelImageCellIdentifier = @"Greetings
     
     // Get the actual height required for the cell
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    NSLog(@"heightForRowAtIndexPath is %f for row %d", height, [indexPath row]);
+    if (height == 0.0f)
+    {
+        height = 800.0f;
+    }
     
     // Add an extra point to the height to account for internal rounding errors that are occasionally observed in
     // the Auto Layout engine, which cause the returned height to be slightly too small in some cases.
