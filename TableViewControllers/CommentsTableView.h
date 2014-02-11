@@ -19,5 +19,7 @@
 - (void) initData;
 - (void) initTableViewHeight;
 
+- (void) handleShowAllCommentsButtonClicked:(id)sender;
+
 
 @end

@@ -15,7 +15,7 @@
 #import "WeddingHelpAppDelegate.h"
 #import "ServerMessageTypes.h"
 #import "CommentTableViewCell.h"
-#import "GreetingTableViewCell.h"
+#import "GreetingTableViewProfileLabelImageCell.h"
 
 
 #define USERPROFILEIMAGE_TAG 1
@@ -28,6 +28,8 @@
 #define COMMENT_TV_TAG 8
 
 
+static NSString *GreetingsTableViewProfileLabelImageCellIdentifier = @"GreetingsTableViewProfileLabelImageCellIdentifier";
+
 
 
 
@@ -37,6 +39,7 @@
 @property (strong, nonatomic) NSMutableArray *greetings;
 @property (strong, nonatomic) Greeting *lastSelectedGreeting;
 @property (weak, nonatomic) WeddingHelpAppDelegate *delegate;
+@property (strong, nonatomic) CommentTableViewCell *commentSampleCell;
 
 @end
 
@@ -62,9 +65,27 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    [self.tableView registerClass:[GreetingTableViewProfileLabelImageCell class] forCellReuseIdentifier:GreetingsTableViewProfileLabelImageCellIdentifier];
+    
+    self.tableView.allowsSelection = NO;
+
+    
     self.greetings = [[NSMutableArray alloc] init];
     
     self.delegate = (WeddingHelpAppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    static NSString *CellNib = @"CommentTableViewCell";
+    NSArray *nib = [[NSBundle mainBundle] loadNibNamed:CellNib owner:self options:nil];
+    if ([nib count] == 0)
+    {
+        NSLog(@"Greetings ERROR: can't find comment cell nib!");
+    }
+    else
+    {
+        self.commentSampleCell = (CommentTableViewCell *)[nib objectAtIndex:0];
+    }
     
     NSLog(@"Adding greetings");
     for (int i = 0; i < 2; i++)
@@ -103,6 +124,31 @@
     NSLog(@"after greetings reloadData");
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contentSizeCategoryChanged:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIContentSizeCategoryDidChangeNotification
+                                                  object:nil];
+}
+
+- (void)contentSizeCategoryChanged:(NSNotification *)notification
+{
+    [self.tableView reloadData];
+}
+
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -120,42 +166,174 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if (self.tableView != tableView)
-    {
-//        NSLog(@"number of rows (comments) %d", [self.greetings ob])
-    }
-    else
-    {
-        NSLog(@"number of rows in section %d", [self.greetings count]);
-        return [self.greetings count];
-    }
-    
-    return 0;
+    NSLog(@"number of rows in section %d", [self.greetings count]);
+    return [self.greetings count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 800.0;
+    GreetingTableViewProfileLabelImageCell *cell = [tableView dequeueReusableCellWithIdentifier:GreetingsTableViewProfileLabelImageCellIdentifier];
+    
+    Greeting *greeting = [self.greetings objectAtIndex:[indexPath row]];
+    
+    // Configure the cell for this indexPath
+    [cell updateFonts];
+    
+    NSString *bodyText = [greeting firstLines];
+    NSMutableAttributedString *bodyAttributedText = [[NSMutableAttributedString alloc] initWithString:bodyText];
+    NSMutableParagraphStyle *bodyParagraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [bodyParagraphStyle setLineSpacing:10.0f];
+    [bodyAttributedText addAttribute:NSParagraphStyleAttributeName value:bodyParagraphStyle range:NSMakeRange(0, bodyText.length)];
+    cell.bodyLabel.attributedText = bodyAttributedText;
+    
+    cell.userProfileImage.image = [greeting userProfileImage] ? [greeting userProfileImage] : [UIImage imageNamed:@"anonymous.png"];
+    cell.addedImage.image = [greeting addedImage] ? [greeting addedImage] : [UIImage imageNamed:@"anonymous.png"];
+    
+    // Make sure the constraints have been added to this cell, since it may have just been created from scratch
+    [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];
+    
+    // Set the width of the cell to match the width of the table view. This is important so that we'll get the
+    // correct height for different table view widths, since our cell's height depends on its width due to
+    // the multi-line UILabel word wrapping. Don't need to do this above in -[tableView:cellForRowAtIndexPath]
+    // because it happens automatically when the cell is used in the table view.
+    cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
+    
+    // Do the layout pass on the cell, which will calculate the frames for all the views based on the constraints
+    // (Note that the preferredMaxLayoutWidth is set on multi-line UILabels inside the -[layoutSubviews] method
+    // in the UITableViewCell subclass
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
+    
+    // Get the actual height required for the cell
+    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    
+    // Add an extra point to the height to account for internal rounding errors that are occasionally observed in
+    // the Auto Layout engine, which cause the returned height to be slightly too small in some cases.
+    height += 1;
+    
+    return height;
+    
+
+    
+//    NSInteger row = [indexPath row];
+//    Greeting *greeting = [self.greetings objectAtIndex:row];
+//    NSArray *comments = [greeting comments];
+//    CGFloat height = 0.0f;
+//    
+//    if (![self.cells count])
+//    {
+//        return 800.0;
+//    }
+//    else
+//    {
+//        GreetingTableViewCell *cell = [self.cells objectAtIndex:row];
+//        assert(cell);
+//        
+//        height = [[cell contentView] frame].size.height;
+//    }
+    
+//
+//    if ([comments count] > NUMBER_OF_COMMENTS_TO_SEE_IN_LOAD_MORE)
+//    {
+//        height += 30.0f;
+//    }
+//    if ([greeting comments])
+//    {
+//        if ([self.cells count])
+//        {
+//            NSLog(@"greeting has comments so calulcating based on frame!");
+//            GreetingTableViewCell *cell = [self.cells objectAtIndex:row];
+//            if (cell)
+//            {
+//                CGRect rect = [[cell commentsTableView] frame];
+//                height += rect.size.height;
+//                
+//            }
+//        }
+//        else
+//        {
+//            for (int i = [comments count] - 1; i >= [comments count] - NUMBER_OF_COMMENTS_TO_SEE_IN_LOAD_MORE; i--)
+//            {
+//                Comment *comment = [comments objectAtIndex:i];
+//                
+//                UIFont *font = [UIFont fontWithName:@"Helvetica" size:15.0];
+//                NSDictionary *attrsDictionary = [NSDictionary dictionaryWithObject:font
+//                                                                            forKey:NSFontAttributeName];
+//                NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:[comment text] attributes:attrsDictionary];
+//                
+//                CGFloat width = [[self.commentSampleCell mainLabel] bounds].size.width;
+//                CGRect textRect = [attrText boundingRectWithSize:CGSizeMake(width, 10000) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading | NSStringDrawingTruncatesLastVisibleLine context:nil];
+//                
+//                height += textRect.size.height;
+//            }
+//        }
+//    }
+//    if ([greeting addedImage] != nil || [greeting addedImagePath] != nil)
+//    {
+//        CGFloat addedImageY = MAX(USERPROFILEIMAGE_Y + USERPROFILEIMAGE_HEIGHT, FIRSTLABEL_Y) + ADDEDIMAGE_MARGIN_TOP;
+//        height += addedImageY + 230.0f;
+//    }
+//    height += FIRSTLABEL_Y;
+//    if ([greeting firstLines] != nil)
+//    {
+//        UIFont *font = [UIFont fontWithName:@"Helvetica" size:14.0];
+//        NSDictionary *attrsDictionary = [NSDictionary dictionaryWithObject:font
+//                                                                    forKey:NSFontAttributeName];
+//        NSAttributedString *attrText = [[NSAttributedString alloc] initWithString:[greeting firstLines] attributes:attrsDictionary];
+//        
+//        CGRect textRect = [attrText boundingRectWithSize:CGSizeMake(FIRSTLABEL_WIDTH, 10000) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
+//        
+//        height += textRect.size.height;
+//    }
+//    
+//    height += 100.0;
+//    return height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"GreetingCellIdentifier";
+//    static NSString *CellIdentifier = @"GreetingCellIdentifier";
+//    
+//    Greeting *greeting = [self.greetings objectAtIndex:[indexPath row]];
+//    
+//    NSLog(@"Dequeuing resuable GreetingTableViewCell");
+//    GreetingTableViewCell *cell = (GreetingTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+//    if (cell == nil) {
+//        
+//        NSLog(@"Allocating new GreetingTableViewCell");
+//        
+//        cell = [[GreetingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+//        
+//        [cell initStyleForIndexPath:indexPath forGreeting:greeting];
+//    }
+//    
+//    [cell setTableViewController:self];
+//    [self.cells setObject:cell atIndexedSubscript:[indexPath row]];
+//    [cell initDataForIndexPath:indexPath forGreeting:greeting];
+//    
+
+    GreetingTableViewProfileLabelImageCell *cell = [tableView dequeueReusableCellWithIdentifier:GreetingsTableViewProfileLabelImageCellIdentifier forIndexPath:indexPath];
     
     Greeting *greeting = [self.greetings objectAtIndex:[indexPath row]];
     
-    NSLog(@"Dequeuing resuable GreetingTableViewCell");
-    GreetingTableViewCell *cell = (GreetingTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        
-        NSLog(@"Allocating new GreetingTableViewCell");
-        
-        cell = [[GreetingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        
-        [cell initStyleForIndexPath:indexPath forGreeting:greeting];
-    }
+    // Configure the cell for this indexPath
+    [cell updateFonts];
     
-    [cell initDataForIndexPath:indexPath forGreeting:greeting];
+    NSString *bodyText = [greeting firstLines];
+    NSMutableAttributedString *bodyAttributedText = [[NSMutableAttributedString alloc] initWithString:bodyText];
+    NSMutableParagraphStyle *bodyParagraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [bodyParagraphStyle setLineSpacing:10.0f];
+    [bodyAttributedText addAttribute:NSParagraphStyleAttributeName value:bodyParagraphStyle range:NSMakeRange(0, bodyText.length)];
+    cell.bodyLabel.attributedText = bodyAttributedText;
+    
+    cell.userProfileImage.image = [greeting userProfileImage] ? [greeting userProfileImage] : [UIImage imageNamed:@"anonymous.png"];
+    cell.addedImage.image = [greeting addedImage] ? [greeting addedImage] : [UIImage imageNamed:@"anonymous.png"];
+    
+    // Make sure the constraints have been added to this cell, since it may have just been created from scratch
+    [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];
+
     
     return cell;
 }

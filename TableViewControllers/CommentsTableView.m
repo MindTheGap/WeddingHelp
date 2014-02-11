@@ -46,6 +46,13 @@
     self.cascade = YES;
 }
 
+- (void) handleShowAllCommentsButtonClicked:(UIButton *)sender
+{
+    self.cascade = NO;
+    [self initTableViewHeight];
+    [self reloadData];
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger res = 0;
