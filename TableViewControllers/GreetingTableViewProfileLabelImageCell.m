@@ -89,7 +89,7 @@
     
     // Set the preferredMaxLayoutWidth of the mutli-line bodyLabel based on the evaluated width of the label's frame,
     // as this will allow the text to wrap correctly, and as a result allow the label to take on the correct height.
-    self.bodyLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.bodyLabel.frame);
+    [self.bodyLabel setPreferredMaxLayoutWidth:CGRectGetWidth(self.bodyLabel.frame)];
 }
 
 - (void)updateConstraints
@@ -117,6 +117,7 @@
     [self.addedImage setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
     [self.addedImage autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bodyLabel withOffset:kAddedImageVerticalInsets];
     [self.addedImage autoAlignAxisToSuperviewAxis:ALAxisVertical];
+    [self.addedImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:20.0f];
     [self.addedImage autoSetDimension:ALDimensionWidth toSize:kAddedImageWidth];
     [self.addedImage autoSetDimension:ALDimensionHeight toSize:kAddedImageHeight];
     
