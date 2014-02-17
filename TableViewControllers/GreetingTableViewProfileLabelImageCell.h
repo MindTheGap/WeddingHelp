@@ -26,6 +26,14 @@
 #define kAddedImageHorizontalInsets 10.0f
 #define kAddedImageVerticalInsets 20.0f
 
+#define kCommentButtonsVerticalInsets 10.0f
+#define kCommentButtonsHorizontalInsets 50.0f
+#define kLikeHorizontalInsets 20.0f
+#define kNumOfLikesHorizontalInsets 20.0f
+
+#define kCommentTableViewLeadingInsets 10.0f
+#define kCommentTableViewTrailingInsets 10.0f
+#define kCommentTableViewVerticalInsets 20.0f
 
 
 @interface GreetingTableViewProfileLabelImageCell : UITableViewCell

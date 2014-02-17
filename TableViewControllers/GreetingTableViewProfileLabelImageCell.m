@@ -45,26 +45,30 @@
         [self.bodyLabel setTextColor:[UIColor darkGrayColor]];
         [self.bodyLabel setBackgroundColor:[UIColor colorWithRed:1 green:0 blue:0 alpha:0.1]];
         
-//        self.likeImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-//        [self.likeImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-//        [self.likeImageView setContentMode:UIViewContentModeCenter];
-//
-//        self.commentImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-//        [self.commentImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-//        [self.commentImageView setContentMode:UIViewContentModeCenter];
+        self.likeImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+        [self.likeImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self.likeImageView setContentMode:UIViewContentModeCenter];
+
+        self.commentImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+        [self.commentImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self.commentImageView setContentMode:UIViewContentModeCenter];
         
-//        self.numOfLikesLabel = [UILabel newAutoLayoutView];
-//        [self.numOfLikesLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-//        [self.numOfLikesLabel setNumberOfLines:1];
-//        [self.numOfLikesLabel setTextAlignment:NSTextAlignmentLeft];
-//        [self.numOfLikesLabel setTextColor:[UIColor darkGrayColor]];
+        self.numOfLikesLabel = [UILabel newAutoLayoutView];
+        [self.numOfLikesLabel setLineBreakMode:NSLineBreakByTruncatingTail];
+        [self.numOfLikesLabel setNumberOfLines:1];
+        [self.numOfLikesLabel setTextAlignment:NSTextAlignmentLeft];
+        [self.numOfLikesLabel setTextColor:[UIColor darkGrayColor]];
+        
+        self.commentsTableView = [CommentsTableView newAutoLayoutView];
+        [self.commentsTableView setTranslatesAutoresizingMaskIntoConstraints:NO];
         
         [self.contentView addSubview:self.userProfileImage];
         [self.contentView addSubview:self.addedImage];
         [self.contentView addSubview:self.bodyLabel];
-//        [self.contentView addSubview:self.likeImageView];
-//        [self.contentView addSubview:self.commentImageView];
-//        [self.contentView addSubview:self.numOfLikesLabel];
+        [self.contentView addSubview:self.likeImageView];
+        [self.contentView addSubview:self.commentImageView];
+        [self.contentView addSubview:self.numOfLikesLabel];
+        [self.contentView addSubview:self.commentsTableView];
 
         [self updateFonts];
     }
@@ -117,9 +121,28 @@
     [self.addedImage setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
     [self.addedImage autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bodyLabel withOffset:kAddedImageVerticalInsets];
     [self.addedImage autoAlignAxisToSuperviewAxis:ALAxisVertical];
-    [self.addedImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:20.0f];
+//    [self.addedImage autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:20.0f];
     [self.addedImage autoSetDimension:ALDimensionWidth toSize:kAddedImageWidth];
     [self.addedImage autoSetDimension:ALDimensionHeight toSize:kAddedImageHeight];
+    
+    [self.commentImageView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+    [self.commentImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.addedImage withOffset:kCommentButtonsVerticalInsets];
+    [self.commentImageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:kCommentButtonsHorizontalInsets];
+    
+    [self.likeImageView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+    [self.likeImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.commentImageView];
+    [self.likeImageView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeft ofView:self.commentImageView withOffset:-kLikeHorizontalInsets];
+
+    [self.numOfLikesLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+    [self.numOfLikesLabel autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.likeImageView];
+    [self.numOfLikesLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:kNumOfLikesHorizontalInsets];
+    
+    [self.commentsTableView setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
+    [self.commentsTableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.commentImageView withOffset:kCommentTableViewVerticalInsets];
+    [self.commentsTableView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:kCommentTableViewLeadingInsets];
+    [self.commentsTableView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:kCommentTableViewTrailingInsets];
+    [self.commentsTableView setHeightConstraint:[self.commentsTableView autoSetDimension:ALDimensionHeight toSize:500.0f]];
+    
     
     self.didSetupConstraints = YES;
 }

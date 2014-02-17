@@ -16,6 +16,8 @@
 
 @property (assign, nonatomic) BOOL cascade;
 
+@property (strong, nonatomic) NSLayoutConstraint *heightConstraint;
+
 - (void) initData;
 - (void) initTableViewHeight;
 

@@ -27,6 +27,9 @@
 #define COMMENT_TAG 7
 #define COMMENT_TV_TAG 8
 
+#define kLikeScaleSize 3.0f
+#define kCommentScaleSize 3.0f
+
 
 static NSString *GreetingsTableViewProfileLabelImageCellIdentifier = @"GreetingsTableViewProfileLabelImageCellIdentifier";
 
@@ -188,10 +191,35 @@ static NSString *GreetingsTableViewProfileLabelImageCellIdentifier = @"Greetings
     
     cell.userProfileImage.image = [greeting userProfileImage] ? [greeting userProfileImage] : [UIImage imageNamed:@"anonymous.png"];
     cell.addedImage.image = [greeting addedImage] ? [greeting addedImage] : [UIImage imageNamed:@"anonymous.png"];
+
+    // grab the original image
+    UIImage *originalLikeImage = [UIImage imageNamed:@"like.png"];
+    // scaling set to 2.0 makes the image 1/2 the size.
+    cell.likeImageView.image = [UIImage imageWithCGImage:[originalLikeImage CGImage]
+                                                   scale:(originalLikeImage.scale * kLikeScaleSize)
+                                             orientation:(originalLikeImage.imageOrientation)];
+    
+    UIImage *originalCommentImage = [UIImage imageNamed:@"comment.png"];
+    // scaling set to 2.0 makes the image 1/2 the size.
+    cell.commentImageView.image = [UIImage imageWithCGImage:[originalCommentImage CGImage]
+                                                      scale:(originalCommentImage.scale * kCommentScaleSize)
+                                                orientation:(originalCommentImage.imageOrientation)];
+
+    
+    [cell.commentsTableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+    [cell.commentsTableView setScrollEnabled:NO];
+    [cell.commentsTableView setComments:[greeting comments]];
+    [cell.commentsTableView initData];
+    [cell.commentsTableView setDelegate:cell.commentsTableView];
+    [cell.commentsTableView setDataSource:cell.commentsTableView];
+
     
     // Make sure the constraints have been added to this cell, since it may have just been created from scratch
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
+    
+    [cell.commentsTableView initTableViewHeight];
+
     
     // Set the width of the cell to match the width of the table view. This is important so that we'll get the
     // correct height for different table view widths, since our cell's height depends on its width due to
@@ -298,26 +326,6 @@ static NSString *GreetingsTableViewProfileLabelImageCellIdentifier = @"Greetings
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    static NSString *CellIdentifier = @"GreetingCellIdentifier";
-//    
-//    Greeting *greeting = [self.greetings objectAtIndex:[indexPath row]];
-//    
-//    NSLog(@"Dequeuing resuable GreetingTableViewCell");
-//    GreetingTableViewCell *cell = (GreetingTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-//    if (cell == nil) {
-//        
-//        NSLog(@"Allocating new GreetingTableViewCell");
-//        
-//        cell = [[GreetingTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-//        
-//        [cell initStyleForIndexPath:indexPath forGreeting:greeting];
-//    }
-//    
-//    [cell setTableViewController:self];
-//    [self.cells setObject:cell atIndexedSubscript:[indexPath row]];
-//    [cell initDataForIndexPath:indexPath forGreeting:greeting];
-//    
-
     GreetingTableViewProfileLabelImageCell *cell = [tableView dequeueReusableCellWithIdentifier:GreetingsTableViewProfileLabelImageCellIdentifier forIndexPath:indexPath];
     
     Greeting *greeting = [self.greetings objectAtIndex:[indexPath row]];
@@ -335,9 +343,36 @@ static NSString *GreetingsTableViewProfileLabelImageCellIdentifier = @"Greetings
     cell.userProfileImage.image = [greeting userProfileImage] ? [greeting userProfileImage] : [UIImage imageNamed:@"anonymous.png"];
     cell.addedImage.image = [greeting addedImage] ? [greeting addedImage] : [UIImage imageNamed:@"anonymous.png"];
     
+    // grab the original image
+    UIImage *originalLikeImage = [UIImage imageNamed:@"like.png"];
+    // scaling set to 2.0 makes the image 1/2 the size.
+    cell.likeImageView.image = [UIImage imageWithCGImage:[originalLikeImage CGImage]
+                                                   scale:(originalLikeImage.scale * kLikeScaleSize)
+                                             orientation:(originalLikeImage.imageOrientation)];
+    
+    UIImage *originalCommentImage = [UIImage imageNamed:@"comment.png"];
+    // scaling set to 2.0 makes the image 1/2 the size.
+    cell.commentImageView.image = [UIImage imageWithCGImage:[originalCommentImage CGImage]
+                                                   scale:(originalCommentImage.scale * kCommentScaleSize)
+                                             orientation:(originalCommentImage.imageOrientation)];
+
+
+
+    [cell.numOfLikesLabel setText:[NSString stringWithFormat:@"%d liked", [[greeting likes] count]]];
+    
+    [cell.commentsTableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+    [cell.commentsTableView setScrollEnabled:NO];
+    [cell.commentsTableView setComments:[greeting comments]];
+    [cell.commentsTableView initData];
+    [cell.commentsTableView setDelegate:cell.commentsTableView];
+    [cell.commentsTableView setDataSource:cell.commentsTableView];
+
+    
     // Make sure the constraints have been added to this cell, since it may have just been created from scratch
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
+
+    [cell.commentsTableView initTableViewHeight];
 
     
     return cell;
